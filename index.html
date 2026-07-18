@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+		<meta http-equiv="Access-Control-Allow-Origin" content="*">
+		<link href="style.css" rel="stylesheet">
+		<script src="main.js"></script>
+		<title>Solution Helper</title>
+		<link rel="icon" href="favicon.ico">
+	</head>
+	<body id="body">
+		<div class="painter-row">
+			<div class="gameboard-cell cell-lime cell-painter" data-color="l">
+				<svg id="pencil-icon" class="icon" viewBox="0 0 103.00165 107.97774">
+					<g transform="translate(-51.417972,-87.165705)">
+						<path d="m 55.825226,189.2671 4.162407,-20.81204 74.433637,-75.413016 16.40478,8.814506 -73.699093,78.10635 z" />
+						<path d="m 124.38252,104.06018 13.9563,9.05936" />
+					</g>
+				</svg>
+			</div>
+			<div class="gameboard-cell cell-green cell-painter" data-color="g"></div>
+			<div class="gameboard-cell cell-purple cell-painter" data-color="p"></div>
+			<div class="gameboard-cell cell-brown cell-painter" data-color="b"></div>
+			<div class="gameboard-cell cell-orange cell-painter" data-color="o"></div>
+			<div class="gameboard-cell cell-sky cell-painter" data-color="k"></div>
+			<div class="gameboard-cell cell-blue cell-painter" data-color="u"></div>
+			<div class="gameboard-cell cell-pink cell-painter" data-color="i"></div>
+			<div class="gameboard-cell cell-red cell-painter" data-color="r"></div>
+			<div class="gameboard-cell cell-yellow cell-painter" data-color="y"></div>
+			<div class="gameboard-cell cell-ochre cell-painter" data-color="c"></div>
+		</div>
+		<div class="input-row">
+			<div class="input input-button" id="size-smaller">-</div>
+			<div class="input input-value" id="size-display"></div>
+			<div class="input input-button" id="size-larger">+</div>
+		</div>
+		<div class="gameboard" id="gameboard"></div>
+		<div class="input-row" id="solve-row">
+			<div class="input input-button" id="solve-go">Solve</div>
+		</div>
+		<div class="input-row hidden" id="step-row">
+			<div class="input input-button" id="step-prev">-</div>
+			<div class="input input-value" id="step-display"></div>
+			<div class="input input-button" id="step-next">+</div>
+		</div>
+		<div class="input-row input hidden" id="step-exp"></div>
+	</body>
+
+	<svg id="cat-icon" class="icon hidden" viewBox="0 0 103.00165 107.97774">
+		<g transform="translate(-51.417972,-87.165705)">
+			<path d="m 60.577463,89.69077 c -2.036504,0.08655 -3.62209,0.528738 -4.489649,1.396297 -3.789576,3.789572 -0.929065,
+			27.130193 6.620785,34.243383 a 45.664055,45.664055 0 0 0 -5.453931,21.64106 45.664055,45.664055 0 0 0 45.663872,
+			45.66388 45.664055,45.664055 0 0 0 45.6644,-45.66388 45.664055,45.664055 0 0 0 -5.45393,-21.64106 c 7.54985,-7.11319 10.41035,
+			-30.453803 6.62078,-34.243383 -4.62698,-4.626973 -29.67581,2.84088 -34.64543,11.876273 a 45.664055,45.664055 0 0 0 -12.18582,
+			-1.65571 45.664055,45.664055 0 0 0 -12.185295,1.65571 C 86.695428,95.622084 69.402314,89.315724 60.577463,89.69077 Z" />
+		</g>
+	</svg>
+
+	<svg id="x-icon" class="icon hidden" viewBox="0 0 103.00165 107.97774">
+		<g transform="translate(-51.417972,-87.165705)">
+    		<path d="M 55.173546,93.409315 150.66406,188.89983" />
+    		<path d="M 150.66406,93.409316 55.173546,188.89983" />
+		</g>
+	</svg>
+
+	<svg id="pencil-icon" class="icon hidden" viewBox="0 0 103.00165 107.97774">
+		<g transform="translate(-51.417972,-87.165705)">
+			<path d="m 55.825226,189.2671 4.162407,-20.81204 74.433637,-75.413016 16.40478,8.814506 -73.699093,78.10635 z" />
+			<path d="m 124.38252,104.06018 13.9563,9.05936" />
+		</g>
+	</svg>
+</html>

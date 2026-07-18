@@ -1,0 +1,133 @@
+body {
+    font-family: sans-serif;
+    background-color: #f2faff;
+    color: #373699;
+}
+
+.gameboard {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+.gameboard-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+.painter-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.input-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+.input {
+    font-size: 2em;
+    margin: .3em;
+    padding: .15em;
+    min-width: 1em;
+    min-height: 1em;
+    text-align: center;
+}
+
+.input-button {
+    background-color: #bfe7ff;
+    outline: .1em solid #bfe7ff;
+    cursor: pointer;
+    border-radius: .2em;
+}
+
+.input-button:hover {
+    outline: .1em solid #33b1ff;
+}
+
+.gameboard-cell {
+    display: block;
+    width: 4em;
+    height: 4em;
+    margin: .2em;
+    border-radius: .6em;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.icon {
+    fill: none;
+    stroke: #f2faff;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    margin: 12%;
+    overflow: visible;
+}
+
+.icon-highlight {
+    stroke: #960000;
+}
+
+.cell-painter {
+    outline: .2em solid #bfe7ff;
+    margin: 1em;
+}
+
+.cell-painter:hover {
+    outline: .2em solid #33b1ff;
+}
+
+.cell-lime {
+    background-color: #8dd57e;
+}
+
+.cell-green {
+    background-color: #288d53;
+}
+
+.cell-purple {
+    background-color: #8a79da;
+}
+
+.cell-brown {
+    background-color: #a66e49;
+}
+
+.cell-orange {
+    background-color: #fa9c5c;
+}
+
+.cell-blue {
+    background-color: #38a8c0;
+}
+
+.cell-sky {
+    background-color: #a6c7e8;
+}
+
+.cell-pink {
+    background-color: #f89be4
+}
+
+.cell-red {
+    background-color: #d46f91;
+}
+
+.cell-yellow {
+    background-color: #fcd985;
+}
+
+.cell-ochre {
+    background-color: #cda400;
+}
