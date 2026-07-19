@@ -1,3 +1,5 @@
+"use strict";
+
 let size;
 let puzzle;
 let puzzleString;
@@ -8,7 +10,7 @@ let iconPencil;
 let gameboard;
 let steps;
 let curStep;
-let exps;
+let exp;
 let guesses;
 let invalid;
 
@@ -17,7 +19,7 @@ window.addEventListener("DOMContentLoaded", () => {
     iconCat = document.getElementById("cat-icon");
     iconPencil = document.getElementById("pencil-icon");
     gameboard = document.getElementById("gameboard");
-    activeColor = "l"
+    activeColor = "l";
 
     try {
         puzzleString = window.atob(window.location.hash.substring(1));
@@ -34,25 +36,42 @@ window.addEventListener("DOMContentLoaded", () => {
     attachEvents();
 });
 
+window.addEventListener("hashchange", () => {
+    let newPuzzleString;
+
+    try {
+        newPuzzleString = window.atob(window.location.hash.substring(1));
+    }
+    catch {
+        newPuzzleString = "";
+    }
+
+    if (newPuzzleString === "") {
+        newPuzzleString = activeColor.repeat(25);
+    }
+
+    if (newPuzzleString !== puzzleString) {
+        puzzleString = newPuzzleString;
+        refreshFromString();
+    }
+});
+
 function attachEvents() {
-    document.getElementById("size-smaller").addEventListener("click", () =>
-    {
+    document.getElementById("size-smaller").addEventListener("click", () => {
         size--;
         let exp = new RegExp("(.{" + size + "}).", "g");
         puzzleString = puzzleString.replace(exp, "$1").substring(0, size*size);
         refreshFromString();
     });
 
-    document.getElementById("size-larger").addEventListener("click", () =>
-    {
+    document.getElementById("size-larger").addEventListener("click", () => {
         size++;
         let exp = new RegExp("(.{" + (size-1) + "})", "g");
         puzzleString = puzzleString.replace(exp, "$1" + activeColor) + activeColor.repeat(size);
         refreshFromString();
     });
 
-    document.getElementById("step-prev").addEventListener("click", () =>
-    {
+    document.getElementById("step-prev").addEventListener("click", () => {
         curStep--;
         if (curStep < 0) {
             curStep = 0;
@@ -60,8 +79,7 @@ function attachEvents() {
         viewStep();
     });
 
-    document.getElementById("step-next").addEventListener("click", () =>
-    {
+    document.getElementById("step-next").addEventListener("click", () => {
         curStep++;
         if (curStep >= steps.length) {
             curStep = steps.length - 1;
@@ -98,6 +116,7 @@ function refreshFromString() {
     document.getElementById("step-exp").classList.add("hidden");
 
     window.location.hash = window.btoa(puzzleString);
+
     createPuzzleFromString();
     document.getElementById("size-display").innerHTML = size;
 
@@ -128,10 +147,6 @@ function createPuzzleFromString() {
 
         return cell;
     });
-}
-
-function createStringFromPuzzle() {
-    puzzleString = puzzle.map((cell) => cell.color).join("");
 }
 
 function fillPuzzleBoard(puzzle) {
@@ -182,6 +197,25 @@ function solve() {
     while (puzzle.filter((cell) => cell.icon === "c").length < size) {
         clearHighlights();
 
+        if (checkUnsolvable())
+        {
+            if (guesses.length === 0) {
+                invalid = true;
+                exp.push("Puzzle is unsolvable. Please check that it's entered correctly.");
+                recordStep();
+                break;
+            }
+
+            puzzle = guesses.pop();
+            exp.push("Puzzle is now unsolvable, so the previous guess must have been incorrect.");
+            let oldGuess = makeGuess();
+
+            puzzle[oldGuess].icon = "x";
+            puzzle[oldGuess].highlight = true;
+            recordStep();
+            continue;
+        }
+
         let onePerRow = ruleOnePer("row");
         if (onePerRow !== -1) {
             placeCat(onePerRow);
@@ -203,9 +237,29 @@ function solve() {
             continue;
         }
 
-        let overlap = colorOverlap();
-        if (overlap !== -1) {
-            overlap.forEach((cell) => {
+        let overlapColor = propOverlap("color");
+        if (overlapColor !== -1) {
+            overlapColor.forEach((cell) => {
+                puzzle[cell.i].icon = "x";
+                puzzle[cell.i].highlight = true;
+            });
+            recordStep();
+            continue;
+        }
+
+        let overlapCol = propOverlap("col");
+        if (overlapCol !== -1) {
+            overlapCol.forEach((cell) => {
+                puzzle[cell.i].icon = "x";
+                puzzle[cell.i].highlight = true;
+            });
+            recordStep();
+            continue;
+        }
+
+        let overlapRow = propOverlap("row");
+        if (overlapRow !== -1) {
+            overlapRow.forEach((cell) => {
                 puzzle[cell.i].icon = "x";
                 puzzle[cell.i].highlight = true;
             });
@@ -253,26 +307,7 @@ function solve() {
             continue;
         }
 
-        if (puzzle.filter((cell) => cell.icon === "o").length === 0)
-        {
-            if (guesses.length === 0) {
-                invalid = true;
-                exp.push("Puzzle is unsolvable. Please check that it's entered correctly.");
-                recordStep();
-                break;
-            }
-
-            puzzle = guesses.pop();
-            exp.push("Puzzle is now unsolvable, so the previous guess must have been incorrect.");
-            let oldGuess = makeGuess();
-
-            puzzle[oldGuess].icon = "x";
-            puzzle[oldGuess].highlight = true;
-            recordStep();
-            continue;
-        }
-
-        exp.push("No more spaces can be eliminated by rule. Make a guess to test.")
+        exp.push("No more spaces can be eliminated by rule. Make a guess to test.");
         guesses.push(JSON.parse(JSON.stringify(puzzle)));
         placeCat(makeGuess());
         recordStep();
@@ -286,6 +321,25 @@ function solve() {
 
     curStep = Math.min(1, steps.length);
     viewStep();
+}
+
+function checkUnsolvable() {
+    return puzzle.filter((cell) => cell.icon === "o").length === 0 ||
+        propEntirelyEliminated("row") ||
+        propEntirelyEliminated("col") ||
+        propEntirelyEliminated("color");
+}
+
+function propEntirelyEliminated(property) {
+    let props = [...new Set(puzzle.map((cell) => cell[property]))];
+
+    for (let i = 0; i < props.length; i++) {
+        if (puzzle.filter((cell) => cell[property] === props[i] && cell.icon !== "x").length === 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function recordStep() {
@@ -339,14 +393,14 @@ function makeGuess() {
     return bestGuess.i;
 }
 
-function colorOverlap() {
+function propOverlap(property) {
     let blanks = puzzle.filter((cell) => cell.icon === "o");
-    let colors = [...new Set(blanks.map((cell) => cell.color))];
+    let props = [...new Set(blanks.map((cell) => cell[property]))];
     let final = [];
-    let finalColor;
+    let finalProp;
 
-    for (let i = 0; i < colors.length; i++) {
-        let cells = blanks.filter((cell) => cell.color === colors[i]);
+    for (let i = 0; i < props.length; i++) {
+        let cells = blanks.filter((cell) => cell[property] === props[i]);
 
         let overlap = blanks.filter((cell) =>
         (
@@ -370,7 +424,7 @@ function colorOverlap() {
 
         if (overlap.length > final.length) {
             final = overlap;
-            finalColor = colors[i];
+            finalProp = props[i];
         }
     }
 
@@ -378,7 +432,12 @@ function colorOverlap() {
         return -1;
     }
 
-    exp.push("A cat placed in any of the remaining " + translateColor(finalColor) + " squares would rule out these squares.")
+    if (property === "color") {
+        exp.push("A cat placed in any of the remaining " + translateColor(finalProp) + " squares would rule out these squares.");
+    }
+    else {
+        exp.push("A cat placed in any of the remaining " + translateProperty(property) + " " + (finalProp+1) + " squares would rule out these squares.");
+    }
     return final;
 }
 
@@ -427,7 +486,7 @@ function colorInNProp(property) {
     for (let intSize = 1; intSize < size; intSize++) {
         let combinations = getCombinations(colors, intSize);
         for (let c = 0; c < combinations.length; c++) {
-            let props = [...new Set(blanks.filter((cell) => combinations[c].includes(cell.color)).map((cell) => cell[property]))]
+            let props = [...new Set(blanks.filter((cell) => combinations[c].includes(cell.color)).map((cell) => cell[property]))];
             if (props.length <= intSize) {
                 let elim = blanks.filter((cell) => !combinations[c].includes(cell.color) && props.includes(cell[property]));
                 if (elim.length > 0) {
@@ -447,11 +506,11 @@ function propInNColor(property) {
     for (let intSize = 1; intSize < size; intSize++) {
         let combinations = getCombinations(props, intSize);
         for (let c = 0; c < combinations.length; c++) {
-            let colors = [...new Set(blanks.filter((cell) => combinations[c].includes(cell[property])).map((cell) => cell.color))]
+            let colors = [...new Set(blanks.filter((cell) => combinations[c].includes(cell[property])).map((cell) => cell.color))];
             if (colors.length <= intSize) {
                 let elim = blanks.filter((cell) => !combinations[c].includes(cell[property]) && colors.includes(cell.color));
                 if (elim.length > 0) {
-                    exp.push("All the " + translateProperty(property) + "(s) " + combinations[c].map((n) => n+1).join(", ") + " contain only " + intsize + " different color(s).")
+                    exp.push("All the " + translateProperty(property) + "(s) " + combinations[c].map((n) => n+1).join(", ") + " contain only " + intSize + " different color(s).");
                     return elim;
                 }
             }
