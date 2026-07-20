@@ -161,12 +161,29 @@ function fillPuzzleBoard(puzzle) {
 
             let cell = document.createElement("div");
             cell.classList.add("gameboard-cell", "editable-cell", mapColor(cellObj.color));
+            cell.dataset.i = cellObj.i;
 
-            cell.addEventListener("click", () => {
+            cell.addEventListener("mousedown", () => {
                 if (activeColor) {
                     puzzleString = puzzleString.substring(0, i*size + j) + activeColor + puzzleString.substring(i*size + j + 1);
                     refreshFromString();
                 }
+            });
+
+            cell.addEventListener("mouseover", (e) => {
+                if (e.buttons % 2 === 0 || !activeColor) {
+                    return;
+                }
+
+                let i = parseInt(e.target.dataset.i);
+                if (isNaN(i) || puzzleString[i] === activeColor) {
+                    return;
+                }
+
+                console.log(i);
+
+                puzzleString = puzzleString.substring(0, i) + activeColor + puzzleString.substring(i + 1);
+                refreshFromString();
             });
 
             let icon = mapIcon(cellObj.icon);
